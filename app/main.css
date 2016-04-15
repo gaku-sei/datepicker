@@ -1,8 +1,3 @@
-.date-picker .body .day {
-  cursor: pointer;
-  transition: all .5s;
-}
-
 .date-picker .body .day:hover,
 .date-picker .body .day.active {
   background: cornflowerblue;

@@ -1,0 +1,10 @@
+{
+  "name": "datepicker",
+  "version": false,
+  "dependencies": {},
+  "ambientDependencies": {
+    "moment-node": "registry:dt/moment-node#2.11.1+20160329220348",
+    "react": "registry:dt/react#0.14.0+20160412154040",
+    "react-dom": "registry:dt/react-dom#0.14.0+20160412154040"
+  }
+}

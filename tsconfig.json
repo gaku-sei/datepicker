@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "jsx": "react",
+    "noLib": true,
+    "noResolve": true,
+    "experimentalDecorators": true,
+    "noImplicitAny": true
+  },
+  "filesGlob": [
+    "./typings/main/**/*.d.ts",
+    "./node_modules/typescript/lib/lib.es6.d.ts",
+    "./node_modules/immutable/dist/immutable.d.ts",
+    "./src/**/*.+(ts|tsx)"
+  ],
+  "atom": {
+    "rewriteTsconfig": true
+  },
+  "compileOnSave": false,
+  "files": [
+    "./typings/main/ambient/moment-node/index.d.ts",
+    "./typings/main/ambient/react-dom/index.d.ts",
+    "./typings/main/ambient/react/index.d.ts",
+    "./node_modules/typescript/lib/lib.es6.d.ts",
+    "./node_modules/immutable/dist/immutable.d.ts",
+    "./src/components/DatePicker.tsx",
+    "./src/components/DatePickerInput.tsx",
+    "./src/containers/Layout.tsx",
+    "./src/index.tsx",
+    "./src/services/util.ts"
+  ]
+}

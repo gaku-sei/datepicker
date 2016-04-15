@@ -1,21 +1,38 @@
 'use strict';
 
-import React, { Component, PropTypes } from 'react';
+import * as React from 'react';
 import { findDOMNode } from 'react-dom';
-import moment from 'moment';
+import * as moment from 'moment';
 
 import DatePicker from './DatePicker';
 
-export default class DatePickerInput extends Component {
-  static propTypes = {
-    autoclose: PropTypes.bool,
-    canNullify: PropTypes.bool,
-    defaultValue: PropTypes.instanceOf(Date),
-    maxDate: PropTypes.instanceOf(Date),
-    minDate: PropTypes.instanceOf(Date),
-    top: PropTypes.bool,
-  };
+const { Component, PropTypes } = React;
 
+interface ComplexDate {
+  formatted?: string;
+  iso?: string;
+}
+
+interface Props {
+  autoclose?: boolean;
+  canNullify?: boolean;
+  defaultValue?: Date;
+  format?: string;
+  headless?: boolean;
+  maxDate?: Date;
+  minDate?: Date;
+  onNullify?: Function;
+  onSelect?(date: ComplexDate): void;
+  top?: boolean;
+  value?: string;
+}
+
+interface State {
+  show?: boolean;
+  formatted?: string;
+}
+
+export default class DatePickerInput extends Component<Props & React.HTMLProps<DatePickerInput>, State> {
   static defaultProps = {
     autoclose: true,
     canNullify: true,
@@ -26,7 +43,6 @@ export default class DatePickerInput extends Component {
     formatted: this.props.defaultValue ? moment(this.props.defaultValue)
       .format(this.props.format || DatePicker.defaultProps.format) : null,
     show: false,
-    value: this.props.defaultValue ? this.props.defaultValue.toJSON() : null,
   };
 
   componentDidMount() {
@@ -35,14 +51,10 @@ export default class DatePickerInput extends Component {
     }
   }
 
-  componentWillReceiveProps(props) {
+  componentWillReceiveProps(props: Props) {
     if (props.hasOwnProperty('value')) {
       const { value: formatted } = props;
-      const state = { formatted };
-      if (formatted) {
-        state.value = moment(formatted, this.refs.datepicker.props.format);
-      }
-      this.setState(state);
+      this.setState({ formatted });
     }
   }
 
@@ -52,28 +64,29 @@ export default class DatePickerInput extends Component {
     }
   }
 
-  onWindowMousedown = (e) => {
-    this.setState({ show: findDOMNode(this.refs.input).contains(e.target) });
+  onWindowMousedown = ({ target }: { target: EventTarget }) => {
+    this.setState({ show: findDOMNode(this.refs['input']).contains(target as Node) });
   };
 
-  submit({ iso, formatted, ...args }) {
-    this.setState({ formatted, value: iso });
+  submit(date: ComplexDate) {
+    const { iso, formatted }: { iso?: string, formatted?: string } = date;
+    this.setState({ formatted, value: iso } as State);
     this.setDisplay(false);
     if (this.props.onSelect) {
-      this.props.onSelect({ iso, formatted, ...args });
+      this.props.onSelect(date);
     }
   }
 
   nullify() {
-    const nullDate = { formatted: null, value: null };
-    this.refs.datepicker.reset();
+    const nullDate: State = { formatted: null };
+    (this.refs['datepicker'] as DatePicker).reset();
     this.setState(nullDate);
     if (this.props.onNullify) {
-      this.props.onNullify(nullDate);
+      this.props.onNullify();
     }
   }
 
-  setDisplay(show) {
+  setDisplay(show: boolean) {
     this.setState({ show });
   }
 
@@ -84,7 +97,7 @@ export default class DatePickerInput extends Component {
       classNames.push('input-group');
     }
 
-    const props = {};
+    const props: { defaultValue?: Date } = {};
 
     if (this.props.defaultValue) {
       props.defaultValue = this.props.defaultValue;
@@ -94,7 +107,7 @@ export default class DatePickerInput extends Component {
       <span className="input-group-btn" ref="nullify">
         <button
           className="btn btn-danger"
-          onClick={::this.nullify}
+          onClick={this.nullify.bind(this)}
           style={{
             borderRadius: 0,
             fontSize: '23px',
@@ -136,7 +149,7 @@ export default class DatePickerInput extends Component {
             format={this.props.format}
             headless={this.props.headless}
             onHide={this.setDisplay.bind(this, false)}
-            onSubmit={::this.submit}
+            onSubmit={this.submit.bind(this)}
             ref="datepicker"
             show={this.state.show}
             style={Object.assign({

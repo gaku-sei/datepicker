@@ -14,7 +14,7 @@ const paths = {
 module.exports = {
   entry: paths.entry,
   resolve: {
-    extensions: ['', '.js', '.jsx'],
+    extensions: ['', '.ts', '.tsx', '.js', '.jsx'],
   },
   output: {
     path: paths.js,
@@ -26,12 +26,9 @@ module.exports = {
   },
   module: {
     loaders: [{
-      test: /\.js(x)?$/,
+      test: /\.ts(x)?$/,
       exclude: '/node_modules/',
-      loader: 'babel-loader',
-    }, {
-      test: /\.css$/,
-      loader: 'style-loader!css-loader'
+      loaders: ['babel-loader', 'ts-loader'],
     }],
   },
 };

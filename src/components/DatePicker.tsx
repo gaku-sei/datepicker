@@ -1,31 +1,41 @@
 'use strict';
 
-import React, { Component, PropTypes } from 'react';
-import moment from 'moment';
+import * as React from 'react';
+import * as moment from 'moment';
 
 import { capitalize, partition, repeat } from '../services/util';
 
 moment.locale('fr');
 
+const { Component, PropTypes } = React;
+
 const weekdays = ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'];
-const boudings = {
+const boundings = {
   width: '270px',
 };
 
-export default class DatePicker extends Component {
-  static propTypes = {
-    defaultValue: PropTypes.instanceOf(Date),
-    fixHeight: PropTypes.bool,
-    format: PropTypes.string,
-    headless: PropTypes.bool,
-    onCancel: PropTypes.func,
-    onHide: PropTypes.func,
-    onSelect: PropTypes.func,
-    onSubmit: PropTypes.func,
-    show: PropTypes.bool,
-    style: PropTypes.object,
-  }
+type MomentAction = 'add' | 'subtract';
 
+interface Props {
+  defaultValue?: Date;
+  fixHeight?: boolean;
+  format?: string;
+  headless?: boolean;
+  onCancel?: Function;
+  onHide?: Function;
+  onSelect?: Function;
+  onSubmit?: Function;
+  show?: boolean;
+  style?: Object;
+}
+
+interface State {
+  ranges?: Array<Array<moment.Moment>>,
+  relative?: moment.Moment,
+  selected?: moment.Moment,
+}
+
+export default class DatePicker extends Component<Props, State> {
   static defaultProps = {
     defaultValue: new Date(),
     fixHeight: false,
@@ -39,18 +49,18 @@ export default class DatePicker extends Component {
     selected: moment(this.props.defaultValue),
   };
 
-  changeYear(action) {
-    const relative = this.state.relative.clone()[action](1, 'year');
+  changeYear(action: MomentAction) {
+    const relative: moment.Moment = this.state.relative.clone()[action](1, 'year');
     this.setState({ ranges: this.getRanges(relative), relative });
   }
 
-  changeMonth(action) {
-    const relative = this.state.relative.clone()[action](1, 'month');
+  changeMonth(action: MomentAction) {
+    const relative: moment.Moment = this.state.relative.clone()[action](1, 'month');
     this.setState({ ranges: this.getRanges(relative), relative });
   }
 
-  getRanges(date = moment()) {
-    const dates = [];
+  getRanges(date: moment.Moment = moment()): Array<Array<moment.Moment>> {
+    const dates: Array<moment.Moment> = [];
     const ret = repeat(null, moment(date).startOf('month').day() - 1);
     const lastDay = moment(date).endOf('month').date();
 
@@ -76,7 +86,7 @@ export default class DatePicker extends Component {
     this.setState({ ranges: this.getRanges(date), relative: date, selected: date });
   }
 
-  select(day) {
+  select(day: moment.Moment) {
     const { selected } = this.state;
     const { onSelect } = this.props;
     day.hours(selected.hours()).minutes(selected.minutes());
@@ -106,7 +116,7 @@ export default class DatePicker extends Component {
     }
   }
 
-  sameDay(date1, date2) {
+  sameDay(date1: moment.Moment, date2: moment.Moment) {
     return !date1.clone().startOf('day').diff(date2.clone().startOf('day'));
   }
 
@@ -118,14 +128,18 @@ export default class DatePicker extends Component {
     this.state.selected.minutes(+value);
   }
 
-  renderCell(day, key) {
+  renderCell(day: moment.Moment, key: string | number) {
     const active = this.sameDay(day, this.state.selected) ? ' active' : '';
-    const size = `calc((${boudings.width} - 9px) / 7)`;
+    const size = `calc((${boundings.width} - 9px) / 7)`;
     return (
       <td
         className={`day${active}`}
         key={key}
         onClick={this.select.bind(this, day)}
+        style={{
+          cursor: 'pointer',
+          transition: 'all .5s',
+        }}
       >
         <div style={{ height: size, lineHeight: size, width: size }}>
           <button
@@ -143,7 +157,7 @@ export default class DatePicker extends Component {
     );
   }
 
-  renderEmptyCell(key) {
+  renderEmptyCell(key: string | number) {
     return (
       <td key={key} style={{ padding: '1px' }}></td>
    );
@@ -158,7 +172,7 @@ export default class DatePicker extends Component {
         style={Object.assign({
           backgroundColor: 'white',
           border: '1px solid #ccc',
-          width: boudings.width,
+          width: boundings.width,
           zIndex: '9999'
         }, style)}
       >
@@ -294,7 +308,7 @@ export default class DatePicker extends Component {
                     defaultValue={selected.hours()}
                     max="23"
                     min="0"
-                    onChange={::this.setHours}
+                    onChange={this.setHours.bind(this)}
                     style={{ borderRadius: 0 }}
                     type="number"
                   />
@@ -308,7 +322,7 @@ export default class DatePicker extends Component {
                     defaultValue={selected.minutes()}
                     max="59"
                     min="0"
-                    onChange={::this.setMinutes}
+                    onChange={this.setMinutes.bind(this)}
                     style={{ borderRadius: 0 }}
                     type="number"
                   />
@@ -323,7 +337,7 @@ export default class DatePicker extends Component {
           <div className="btn-group" role="group">
             <button
               className="btn btn-success"
-              onClick={::this.submit}
+              onClick={this.submit.bind(this)}
               style={{
                 border: 0,
                 borderRadius: 0,
@@ -334,7 +348,7 @@ export default class DatePicker extends Component {
             </button>
             <button
               className="btn btn-warning"
-              onClick={::this.cancel}
+              onClick={this.cancel.bind(this)}
               style={{
                 border: 0,
                 borderRadius: 0,

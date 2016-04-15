@@ -17,7 +17,7 @@ const paths = {
   },
   src: {
     root: './src/',
-    all: './src/**/*.{js,jsx}',
+    all: './src/**/*.{ts,tsx}',
   },
   view: {
     target: `./views/${process.env.NODE_ENV || 'development'}.html`,

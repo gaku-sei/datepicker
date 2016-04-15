@@ -2,3 +2,4 @@ app/bundle.js
 app/index.html
 
 /node_modules
+/typings
