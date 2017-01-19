@@ -61,7 +61,7 @@ export default class DatePicker extends Component<Props, State> {
 
   getRanges(date: moment.Moment = moment()): Array<Array<moment.Moment>> {
     const dates: Array<moment.Moment> = [];
-    const ret = repeat(null, moment(date).startOf('month').day() - 1);
+    const ret = repeat(null, moment(date).startOf('month').weekday());
     const lastDay = moment(date).endOf('month').date();
 
     for (let i = 1; i <= lastDay; i++) {
